@@ -1,4 +1,4 @@
-= java-ee-entity-bean
+= java-ee-entity-bean image:https://travis-ci.org/daggerok/java-ee-entity-bean.svg?branch=master["Build Status", link="https://travis-ci.org/daggerok/java-ee-entity-bean"]
 
 //tag::content[]
 
