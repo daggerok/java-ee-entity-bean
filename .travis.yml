@@ -17,9 +17,6 @@ before_script:
 
 script:
 
-- docker rm -f -v $(docker ps -a|grep -v CONTAINER|awk '{print $1}')
-- docker rmi -f $(docker images| grep -v daggerok|grep -v TAG|awk '{print $3}')
-- docker volume rm $(docker volume ls|grep -v DRIVER|awk '{print $2}')
 - bash ./gradlew war >/dev/null
 - docker-compose -f docker-compose-gradle.yaml build
 - docker-compose -f docker-compose-gradle.yaml up &
@@ -32,9 +29,10 @@ script:
 - http :8080/app
 - docker-compose -f docker-compose-gradle.yaml down -v
 
-- docker rm -f -v $(docker ps -a|grep -v CONTAINER|awk '{print $1}')
-- docker rmi -f $(docker images| grep -v daggerok|grep -v TAG|awk '{print $3}')
-- docker volume rm $(docker volume ls|grep -v DRIVER|awk '{print $2}')
+
+- docker rm -f -v $(docker ps -a|grep -v CONTAINER|awk '{print $1}') || true
+- docker rmi -f $(docker images| grep -v daggerok|grep -v TAG|awk '{print $3}') || true
+- docker volume rm $(docker volume ls|grep -v DRIVER|awk '{print $2}') || true
 - bash ./mvnw -U >/dev/null
 - docker-compose -f docker-compose-maven.yaml build
 - docker-compose -f docker-compose-maven.yaml up &
