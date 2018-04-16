@@ -17,7 +17,14 @@ before_script:
 
 script:
 
-- docker rm -f -v $(docker ps -a|grep -v CONTAINER|awk '{print $1}') ; docker rmi -f $(docker images| grep -v daggerok|grep -v TAG|awk '{print $3}') ; docker volume rm $(docker volume ls|grep -v DRIVER|awk '{print $2}') ; ./gradlew war >/dev/null ; docker-compose -f docker-compose-gradle.yaml up --build
+- docker rm -f -v $(docker ps -a|grep -v CONTAINER|awk '{print $1}')
+- docker rmi -f $(docker images| grep -v daggerok|grep -v TAG|awk '{print $3}')
+- docker volume rm $(docker volume ls|grep -v DRIVER|awk '{print $2}')
+- bash ./gradlew war >/dev/null
+- docker-compose -f docker-compose-gradle.yaml build
+- docker-compose -f docker-compose-gradle.yaml up &
+- wait_for 8080 5005 9990
+- sleep 25
 - http :8080/app data=ololo
 - http :8080/app data=trololo
 - http :8080/app data=olo
@@ -25,7 +32,14 @@ script:
 - http :8080/app
 - docker-compose -f docker-compose-gradle.yaml down -v
 
-- docker rm -f -v $(docker ps -a|grep -v CONTAINER|awk '{print $1}') ; docker rmi -f $(docker images| grep -v daggerok|grep -v TAG|awk '{print $3}') ; docker volume rm $(docker volume ls|grep -v DRIVER|awk '{print $2}') ; ./mvnw -U >/dev/null ; docker-compose -f docker-compose-maven.yaml up --build
+- docker rm -f -v $(docker ps -a|grep -v CONTAINER|awk '{print $1}')
+- docker rmi -f $(docker images| grep -v daggerok|grep -v TAG|awk '{print $3}')
+- docker volume rm $(docker volume ls|grep -v DRIVER|awk '{print $2}')
+- bash ./mvnw -U >/dev/null
+- docker-compose -f docker-compose-maven.yaml build
+- docker-compose -f docker-compose-maven.yaml up &
+- wait_for 8080 5005 9990
+- sleep 20
 - http :8080/app data=ololo
 - http :8080/app data=trololo
 - http :8080/app data=olo
