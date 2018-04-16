@@ -1,0 +1,40 @@
+service:
+- docker
+
+env:
+  global:
+  - TERM=dumb
+
+language: java
+jdk: oraclejdk8
+
+install: true
+before_script:
+- sudo apt update -y >/dev/null 2>&1 || true
+- sudo apt install -y --no-install-recommends curl docker-ce python-pip >/dev/null 2>&1
+- sudo pip install docker-compose httpie >/dev/null 2>&1
+- source <(curl -s https://raw.githubusercontent.com/daggerok/bash-functions/master/main.bash)
+
+script:
+- bash ./gradlew >/dev/null
+- docker rm -f -v $(docker ps -a|grep -v CONTAINER|awk '{print $1}') ; docker rmi -f $(docker images| grep -v daggerok|grep -v TAG|awk '{print $3}') ; docker volume rm $(docker volume ls|grep -v DRIVER|awk '{print $2}') ; ./gradlew war ; docker-compose -f docker-compose-gradle.yaml up --build
+- http :8080/app data=ololo
+- http :8080/app data=trololo
+- http :8080/app data=olo
+- http :8080/app data=gradle
+- http :8080/app
+- docker-compose -f docker-compose-gradle.yaml down -v
+
+- bash ./mvnw >/dev/null
+- docker rm -f -v $(docker ps -a|grep -v CONTAINER|awk '{print $1}') ; docker rmi -f $(docker images| grep -v daggerok|grep -v TAG|awk '{print $3}') ; docker volume rm $(docker volume ls|grep -v DRIVER|awk '{print $2}') ; ./gradlew war ; docker-compose -f docker-compose-maven.yaml up --build
+- http :8080/app data=ololo
+- http :8080/app data=trololo
+- http :8080/app data=olo
+- http :8080/app data=maven
+- http :8080/app
+- docker-compose -f docker-compose-maven.yaml down -v
+
+cache:
+  directories:
+  - $HOME/.m2
+  - $HOME/.gradle
