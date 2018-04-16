@@ -28,7 +28,7 @@ script:
 - http :8080/app data=gradle
 - http :8080/app
 - docker-compose -f docker-compose-gradle.yaml down -v
-
+- stop_any 8080 5005 9990 8080 5005 9990
 
 - docker rm -f -v $(docker ps -a|grep -v CONTAINER|awk '{print $1}') || true
 - docker rmi -f $(docker images| grep -v daggerok|grep -v TAG|awk '{print $3}') || true
@@ -43,7 +43,6 @@ script:
 - http :8080/app data=olo
 - http :8080/app data=maven
 - http :8080/app
-- docker-compose -f docker-compose-maven.yaml down -v
 
 cache:
   directories:
